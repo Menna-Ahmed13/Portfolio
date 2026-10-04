@@ -1,10 +1,5 @@
-// Footer year
 document.getElementById('year').textContent = new Date().getFullYear();
 
-
-// ===============================
-// Mobile nav toggle
-// ===============================
 const navToggle = document.getElementById('navToggle');
 const navLinks = document.getElementById('navLinks');
 
@@ -18,10 +13,6 @@ navLinks.querySelectorAll('a').forEach(a => {
   });
 });
 
-
-// ===============================
-// Active nav link on scroll
-// ===============================
 const sections = document.querySelectorAll('main section[id]');
 const navItems = document.querySelectorAll('.nav-link');
 
@@ -42,10 +33,6 @@ window.addEventListener('scroll', () => {
   });
 });
 
-
-// ===============================
-// Typing effect in hero
-// ===============================
 const roles = [
   'Data Scientist',
   'AI / ML Engineer',
@@ -88,48 +75,58 @@ function typeLoop() {
 
 typeLoop();
 
-
-// ===============================
-// Works carousel
-// ===============================
 const carousel = document.getElementById('worksCarousel');
 const prevBtn = document.getElementById('worksPrev');
 const nextBtn = document.getElementById('worksNext');
 const dotsWrap = document.getElementById('worksDots');
 const cards = carousel.querySelectorAll('.work-card');
 
-cards.forEach((_, index) => {
-  const dot = document.createElement('span');
+let dots = [];
 
-  if (index === 0) {
-    dot.classList.add('active');
-  }
+function getStep() {
+  const gap = parseFloat(getComputedStyle(carousel).columnGap) || 24;
+  return cards[0].offsetWidth + gap;
+}
 
-  dotsWrap.appendChild(dot);
-});
-
-const dots = dotsWrap.querySelectorAll('span');
+function visibleCount() {
+  return Math.max(1, Math.round(carousel.clientWidth / getStep()));
+}
 
 function updateDots() {
-  const scrollLeft = carousel.scrollLeft;
-  const cardWidth = cards[0].offsetWidth + 24;
-
-  const index = Math.round(scrollLeft / cardWidth);
+  const index = Math.min(
+    dots.length - 1,
+    Math.round(carousel.scrollLeft / getStep())
+  );
 
   dots.forEach((dot, i) => {
     dot.classList.toggle('active', i === index);
   });
 }
 
+function buildDots() {
+  dotsWrap.innerHTML = '';
+
+  const pages = Math.max(1, cards.length - visibleCount() + 1);
+
+  for (let i = 0; i < pages; i++) {
+    dotsWrap.appendChild(document.createElement('span'));
+  }
+
+  dots = Array.from(dotsWrap.querySelectorAll('span'));
+  updateDots();
+}
+
+buildDots();
+
+window.addEventListener('resize', buildDots);
+
 carousel.addEventListener('scroll', () => {
   window.requestAnimationFrame(updateDots);
 });
 
 function scrollByCard(direction) {
-  const cardWidth = cards[0].offsetWidth + 24;
-
   carousel.scrollBy({
-    left: direction * cardWidth,
+    left: direction * getStep(),
     behavior: 'smooth'
   });
 }
@@ -142,10 +139,6 @@ nextBtn.addEventListener('click', () => {
   scrollByCard(1);
 });
 
-
-// ===============================
-// Services accordion
-// ===============================
 document.querySelectorAll('.acc-item').forEach(item => {
 
   const head = item.querySelector('.acc-head');
@@ -165,11 +158,6 @@ document.querySelectorAll('.acc-item').forEach(item => {
 
 });
 
-
-// ===============================
-// Contact Form
-// ===============================
-
 const CONTACT_EMAIL = 'mennakherashi@gmail.com';
 
 const contactForm = document.getElementById('contactForm');
@@ -187,7 +175,6 @@ function setStatus(message, type = '') {
   }
 }
 
-
 contactForm.addEventListener('submit', async (event) => {
 
   event.preventDefault();
@@ -199,11 +186,6 @@ contactForm.addEventListener('submit', async (event) => {
   const message = (formData.get('message') || '').toString().trim();
   const honey = (formData.get('_honey') || '').toString().trim();
 
-
-  // -------------------------------
-  // Validation
-  // -------------------------------
-
   if (!name || !email || !message) {
 
     setStatus(
@@ -213,7 +195,6 @@ contactForm.addEventListener('submit', async (event) => {
 
     return;
   }
-
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -227,11 +208,6 @@ contactForm.addEventListener('submit', async (event) => {
     return;
   }
 
-
-  // -------------------------------
-  // Honeypot spam protection
-  // -------------------------------
-
   if (honey) {
 
     contactForm.reset();
@@ -244,16 +220,10 @@ contactForm.addEventListener('submit', async (event) => {
     return;
   }
 
-
-  // -------------------------------
-  // Loading state
-  // -------------------------------
-
   sendBtn.disabled = true;
   sendLabel.textContent = 'Sending...';
 
   setStatus('', '');
-
 
   try {
 
@@ -285,14 +255,7 @@ contactForm.addEventListener('submit', async (event) => {
       }
     );
 
-
-    // Try to read FormSubmit response
     const result = await response.json().catch(() => null);
-
-
-    // -------------------------------
-    // Success
-    // -------------------------------
 
     if (
       response.ok &&
@@ -334,10 +297,6 @@ contactForm.addEventListener('submit', async (event) => {
 
 });
 
-
-// ===============================
-// Scroll reveal animations
-// ===============================
 const revealEls = document.querySelectorAll(
   '.reveal, .reveal-stagger'
 );
@@ -368,10 +327,6 @@ revealEls.forEach(el => {
   revealObserver.observe(el);
 });
 
-
-// ===============================
-// Animated stat counters
-// ===============================
 const statNums = document.querySelectorAll('.stat-num');
 
 const statObserver = new IntersectionObserver(
@@ -396,7 +351,6 @@ const statObserver = new IntersectionObserver(
 
       const start = performance.now();
 
-
       function tick(now) {
 
         const progress = Math.min(
@@ -409,7 +363,6 @@ const statObserver = new IntersectionObserver(
 
         el.textContent =
           Math.round(eased * target) + suffix;
-
 
         if (progress < 1) {
           requestAnimationFrame(tick);
@@ -433,10 +386,6 @@ statNums.forEach(el => {
   statObserver.observe(el);
 });
 
-
-// ===============================
-// Back to top
-// ===============================
 const toTop = document.getElementById('toTop');
 
 toTop.addEventListener('click', () => {
